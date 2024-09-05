@@ -1,6 +1,5 @@
 # Time Series Explanation Spaces
-This is the open source repository of "Explanation Space: A New Perspective into Time Series Interpretability" submitted to AAAI 2025.
-The paper is available at: www.archix.org ...
+This is the open source repository of [Explanation Space: A New Perspective into Time Series Interpretability](https://arxiv.org/abs/2409.01354) submitted to AAAI 2025.
 
 ## Library Versions
 * Python 3.10.9
