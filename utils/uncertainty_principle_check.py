@@ -8,7 +8,7 @@ def uncertainty_plot_sort_based_integral_based(ts, ps, percentage_covered=1.0, s
     ps = ps.reshape(-1)
     ts_size = ts.shape[0]
     ts = np.abs(ts)
-
+    full_ps = np.concatenate((ps, ps[1:-1]))
     ps = np.abs(full_ps)
 
     ts_normalization_factor = np.sqrt(np.sum(ts ** 2))
