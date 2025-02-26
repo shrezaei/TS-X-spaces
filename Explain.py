@@ -15,6 +15,7 @@ from utils.wrappers import FFT_Wrapper, Spectrogram_Wrapper, Diff_Wrapper, Min_Z
 from utils.plot_attribution import plot_attribution
 from captum.attr import visualization
 import argparse
+from utils.uncertainty_principle_check import uncertainty_plot_sort_based_integral_based
 
 
 parser = argparse.ArgumentParser(description='Explain the target model.')
@@ -24,7 +25,7 @@ parser.add_argument('-a', '--xai_approach', type=str, default='DeepLift', choice
                                                                                    'GuidedBackprop'])
 parser.add_argument('-d', '--dataset', type=str, default='GunPoint', help="Datasets are loaded from UCR UEA Repository.")
 parser.add_argument('-p', '--base_path', type=str, default='saved_models', help="Base path to save models.")
-parser.add_argument('-x', '--X_space', type=str, default='Time', choices=['Time', 'Freq', 'TimeFreq', 'Diff', 'MinZero', 'Diff_back_to_Time'])
+parser.add_argument('-x', '--X_space', type=str, default='Time', choices=['Time', 'Freq', 'TimeFreq', 'Diff', 'MinZero', 'Diff_back_to_Time', 'Uncertainty_principle_test'])
 parser.add_argument('-b', '--batch_size', type=int, default=64, help='Batch size')
 parser.add_argument('-i', '--sample_id', type=int, default=0, help='Sample number from the dataset.')
 parser.add_argument('-s', '--set', type=str, default='Train', choices=['Train', 'Test'])
@@ -124,7 +125,7 @@ if __name__ == '__main__':
     elif xai_name == 'GuidedBackprop':
         xai_ref = GuidedBackprop
 
-    if x_space == "Time":
+    if x_space == "Time" or x_space == "Uncertainty_principle_test":
         explain_model = model
         xai = xai_ref(explain_model)
         if set == 'Train':
@@ -138,10 +139,10 @@ if __name__ == '__main__':
         classifier_robustness, xai_robustness = Robustness(target_sample, exp, explain_model, xai, xai_name, x_space, sliding_window=(1, 5), baselines=x_train[-40:])
         paf = PAF(target_sample, exp, explain_model, predicted_label, type=x_space, epsilon=0.01)    #-1 means unsuccessful explanation
 
-        exp = exp.detach().cpu().clone().numpy()
-        plot_attribution(np.array([target_sample.cpu().numpy()]), exp, figsize=(12, 6), title="Time")
+        ts_exp = exp.detach().cpu().clone().numpy()
+        plot_attribution(np.array([target_sample.cpu().numpy()]), ts_exp, figsize=(12, 6), title="Time")
 
-    elif x_space == "Freq":
+    if x_space == "Freq" or x_space == "Uncertainty_principle_test":
         explain_model = FFT_Wrapper(model, steps).float().cuda()
         explain_model.eval()
         xai = xai_ref(explain_model)
@@ -161,10 +162,16 @@ if __name__ == '__main__':
         classifier_robustness, xai_robustness = Robustness(target_sample, exp, explain_model, xai, xai_name, x_space, sliding_window=(1, 5), baselines=x_train[-40:])
         paf = PAF(target_sample, exp, explain_model, predicted_label, type=x_space, epsilon=0.01)    #-1 means unsuccessful explanation
 
-        exp = exp.detach().cpu().clone().numpy()
-        plot_attribution(np.array([target_sample[:, 0:1, :].cpu().numpy()]), exp[:, 0:1, :], figsize=(12, 6), title="Frequency")
-        plot_attribution(np.array([target_sample[:, 1:2, :].cpu().numpy()]), exp[:, 1:2, :], figsize=(12, 6), title="Phase")
-
+        fq_exp = exp.detach().cpu().clone().numpy()
+        plot_attribution(np.array([target_sample[:, 0:1, :].cpu().numpy()]), fq_exp[:, 0:1, :], figsize=(12, 6), title="Frequency")
+        plot_attribution(np.array([target_sample[:, 1:2, :].cpu().numpy()]), fq_exp[:, 1:2, :], figsize=(12, 6), title="Phase")
+        if x_space == "Uncertainty_principle_test":
+            bound_gaps, violation_counter = uncertainty_plot_sort_based_integral_based(ts_exp[0, 0, :], fq_exp[0, 0:1, :])
+            if violation_counter > 0:
+                print("UP is violated!")
+            else:
+                print("UP is not violated!")
+              
     elif x_space == 'TimeFreq':
         explain_model = Spectrogram_Wrapper(model, n_fft=nfft).float().cuda()
         explain_model.eval()
