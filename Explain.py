@@ -157,7 +157,7 @@ if __name__ == '__main__':
             target_sample = x_test_fft[id:id+1]
 
         predicted_label = torch.argmax(explain_model(target_sample)).item()
-        exp = explain(xai, xai_name, target_sample, predicted_label, sliding_window=(1, 5), baselines=x_train[-40:])
+        ts_exp = explain(xai, xai_name, target_sample, predicted_label, sliding_window=(1, 5), baselines=x_train[-40:])
 
         classifier_robustness, xai_robustness = Robustness(target_sample, exp, explain_model, xai, xai_name, x_space, sliding_window=(1, 5), baselines=x_train[-40:])
         paf = PAF(target_sample, exp, explain_model, predicted_label, type=x_space, epsilon=0.01)    #-1 means unsuccessful explanation
@@ -171,6 +171,7 @@ if __name__ == '__main__':
                 print("UP is violated!")
             else:
                 print("UP is not violated!")
+        exp = fq_exp
               
     elif x_space == 'TimeFreq':
         explain_model = Spectrogram_Wrapper(model, n_fft=nfft).float().cuda()
@@ -267,9 +268,9 @@ if __name__ == '__main__':
         else:
             plot_attribution(np.array([target_sample.cpu().numpy()]), exp, figsize=(12, 6), title="Difference Space")
 
-
-    print("Classifier Robustness: ", classifier_robustness)
-    print("XAI Robustness: ", xai_robustness)
-    print("Percentage of Attribution to Flip the label (-1 means zeroing all features with non-zero attribution doesn't flip the label): ", paf)
-    print("Sparsity: ", sparsity(exp))
+    if x_space != "Uncertainty_principle_test":
+        print("Classifier Robustness: ", classifier_robustness)
+        print("XAI Robustness: ", xai_robustness)
+        print("Percentage of Attribution to Flip the label (-1 means zeroing all features with non-zero attribution doesn't flip the label): ", paf)
+        print("Sparsity: ", sparsity(exp))
 
