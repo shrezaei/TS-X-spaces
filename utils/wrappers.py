@@ -64,3 +64,18 @@ class Min_Zero_Wrapper(nn.Module):
         x = self.mean_zerod(x)
         x = self.base_model(x)
         return x
+
+
+class Decomposition_Wrapper(nn.Module):
+    def __init__(self, base_model, model_type="ResNet"):
+        super().__init__()
+        self.base_model = base_model
+        self.sum = torch.sum
+        self.model_type = model_type
+
+    def forward(self, x):
+        x = self.sum(x, dim=1)
+        if self.model_type in ["CNN", "ResNet", "LSTM", "InceptionTime"]:
+            x = x.view(x.shape[0], 1, -1)
+        x = self.base_model(x)
+        return x
