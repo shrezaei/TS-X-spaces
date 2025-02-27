@@ -16,6 +16,7 @@ from utils.plot_attribution import plot_attribution
 from captum.attr import visualization
 import argparse
 from utils.uncertainty_principle_check import uncertainty_plot_sort_based_integral_based
+from datasets.synthetic import freq_features_variable_amplitude_shapelet_feature_per_class
 
 
 parser = argparse.ArgumentParser(description='Explain the target model.')
@@ -55,6 +56,8 @@ if __name__ == '__main__':
         y_train_cpu = y_train_cpu[:, 0, 0]
         x_test_cpu = x_test_cpu[:, :, 0, 0, ::2]
         y_test_cpu = y_test_cpu[:, 0, 0]
+    elif dataset_name == 'synthetic':
+        x_train_cpu, x_test_cpu, y_train_cpu, y_test_cpu = freq_features_variable_amplitude_shapelet_feature_per_class()
     else:
         uea_ucr = UCR_UEA_datasets(use_cache=True)
         x_train_cpu, y_train_cpu, x_test_cpu, y_test_cpu = uea_ucr.load_dataset(dataset_name)
