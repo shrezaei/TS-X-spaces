@@ -22,7 +22,7 @@ def add_ts(steps, features, add_unfeature=True, fixed_position=False):
         return np.zeros(steps)
 
 
-def freq_features_variable_amplitude_shapelet_feature_per_class(steps, train_size=1000, test_size=150, num_classes=2, seed=0, add_freq_unfeature=True, add_shape_unfeature=True, noise_avg=0.0, freq_features=[10, 15], freq_nonfeatures=[33]):
+def freq_features_variable_amplitude_shapelet_feature_per_class(steps=500, train_size=1000, test_size=300, num_classes=2, seed=0, add_freq_unfeature=True, add_shape_unfeature=True, noise_avg=0.0, freq_features=[10, 15], freq_nonfeatures=[33]):
     if seed is not None:
         np.random.seed(seed)
 
