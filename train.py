@@ -8,6 +8,7 @@ from tslearn.datasets import UCR_UEA_datasets
 from models.ResNet import ResNetBaseline
 from tsai.models.InceptionTime import InceptionTime
 from utils.utils import create_path_if_not_exists, evaluate_classifier
+from datasets.synthetic import freq_features_variable_amplitude_shapelet_feature_per_class
 import argparse
 
 
@@ -40,6 +41,8 @@ if __name__ == '__main__':
         y_train_cpu = y_train_cpu[:, 0, 0]
         x_test_cpu = x_test_cpu[:, :, 0, 0, ::2]
         y_test_cpu = y_test_cpu[:, 0, 0]
+    elif dataset_name == 'synthetic':
+        x_train_cpu, x_test_cpu, y_train_cpu, y_test_cpu = freq_features_variable_amplitude_shapelet_feature_per_class()
     else:
         uea_ucr = UCR_UEA_datasets(use_cache=True)
         x_train_cpu, y_train_cpu, x_test_cpu, y_test_cpu = uea_ucr.load_dataset(dataset_name)
