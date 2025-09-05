@@ -1,5 +1,5 @@
 # Time Series Explanation Spaces
-This is the open source repository of [Explanation Space: A New Perspective into Time Series Interpretability](https://arxiv.org/abs/2409.01354) submitted to AAAI 2025.
+This is the open source repository for [Explanation Space: A New Perspective into Time Series Interpretability](https://arxiv.org/abs/2409.01354) and [On the Necessity of Multi-Domain Explanation: An Uncertainty Principle Approach for Deep Time Series Models](https://arxiv.org/pdf/2506.03267?) both published in ICDM 2025.
 
 ## Library Versions
 * Python 3.10.9
@@ -21,4 +21,7 @@ You can change the explanation space with -x option. Current options include 'Ti
 ```
 $ python Explain.py -m ResNet -d GunPoint -a DeepLift -x Freq
 ```
-
+To check if the uncertainty principle is violated you can set the space variable as 'Uncertainty_principle_test'.
+```
+$ python Explain.py -m ResNet -d GunPoint -a DeepLift -x Uncertainty_principle_test
+```
